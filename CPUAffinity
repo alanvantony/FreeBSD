@@ -1,0 +1,33 @@
+If your hardware comprises multiple CPUs, you have the option to set the CPU affinity to execute specific processes on designated cores. In FreeBSD, the 'cpuset' command facilitates this functionality. For instance, on my test server hosted on AWS with two CPU cores, one can verify the hardware configuration by executing the command:
+
+
+sysctl -a | egrep -i 'hw.machine|hw.model|hw.ncpu'
+This command reveals that the machine possesses two CPUs, with up to 2 cores, namely 0 and 1.
+
+To allocate all system default processes to core 0, the following command is employed:
+
+
+cpuset -s1 -l 0 
+Here, '0' denotes the CPU number. To make this configuration persistent across reboots, the following line should be appended to the '/etc/rc.conf' file:
+
+
+
+/usr/bin/cpuset -s1 -l 0
+To assign the 'openvpn' process to CPU 1, it is necessary to first determine the process ID (PID) of the 'openvpn' process using the 'ps' command:
+
+
+
+ps ax | grep openvpn
+Once the process ID is identified, the subsequent command is utilized to relocate the process to CPU 1:
+
+
+
+cpuset -C -c -l 1 -p openvpnpid
+
+For this configuration to persist beyond reboots, a startup script is required to identify the process ID and execute the above command automatically. This is essential due to the dynamic nature of process IDs, which change upon system reboots or service restarts.
+
+Upon successful implementation, when running the 'top' command, one can observe that all system processes are executing on CPU 0, while the 'openvpn' process is confined to core 1.
+
+
+
+
