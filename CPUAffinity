@@ -1,3 +1,5 @@
+**How to set CPU affinity in FreeBSD to allocate specific cores to specific processes**
+
 If your hardware comprises multiple CPUs, you have the option to set the CPU affinity to execute specific processes on designated cores. In FreeBSD, the 'cpuset' command facilitates this functionality. For instance, on my test server hosted on AWS with two CPU cores, one can verify the hardware configuration by executing the command:
 
 
